@@ -1,0 +1,8 @@
+{
+	"tutorials": {
+		"group": "ftblib:info",
+		"icon": "ftblib:icons/marker",
+		"x": 615,
+		"click": "ftbtutorialmod:list"
+	}
+}

@@ -1,0 +1,17 @@
+[
+	{
+		"modid": "ftbtutorialmod",
+		"name": "FTB Tutorial Mod",
+		"description": "",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"url": "https://www.curseforge.com/minecraft/mc-mods/ftb-tutorial-mod",
+		"updateUrl": "",
+		"authorList": ["LatvianModder"],
+		"credits": "",
+		"logoFile": "assets/ftbtutorialmod/textures/logo.png",
+		"screenshots": [],
+		"parent": "",
+		"dependencies": []
+	}
+]
