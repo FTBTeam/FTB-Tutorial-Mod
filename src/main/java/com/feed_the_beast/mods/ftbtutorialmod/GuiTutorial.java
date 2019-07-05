@@ -5,18 +5,22 @@ import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
 import com.feed_the_beast.ftblib.lib.gui.Theme;
 import com.feed_the_beast.ftblib.lib.icon.Color4I;
 import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
+import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
+import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialLayer;
+import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialPage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -73,11 +77,23 @@ public class GuiTutorial extends GuiBase
 	@Override
 	public void drawBackground(Theme theme, int x, int y, int w, int h)
 	{
+		ResourceLocation background = Gui.OPTIONS_BACKGROUND;
+
+		if (tutorial.background != null)
+		{
+			background = tutorial.background;
+
+			if (!tutorial.pages.isEmpty() && tutorial.pages.get(page).background != null)
+			{
+				background = tutorial.pages.get(page).background;
+			}
+		}
+
 		GlStateManager.disableLighting();
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		Minecraft.getMinecraft().getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(background);
 		GlStateManager.color(1F, 1F, 1F, 1F);
 		bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 		bufferbuilder.pos(x, y + h, 0D).tex(0D, h / 32D).color(64, 64, 64, 255).endVertex();
@@ -110,48 +126,98 @@ public class GuiTutorial extends GuiBase
 			return;
 		}
 
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		GlStateManager.color(1F, 1F, 1F, 1F);
+		TutorialPage p = tutorial.pages.get(page);
 
-		TextureManager manager = Minecraft.getMinecraft().getTextureManager();
+		double maxBoxW = width - 72D;
+		double maxBoxH = height - 62D;
+		double maxBoxX = (width - maxBoxW) / 2D;
+		double maxBoxY = 38D;
 
-		for (ResourceLocation layer : tutorial.pages.get(page).layers)
+		if (p.description.isEmpty())
 		{
-			manager.bindTexture(layer);
-			int rtw = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-			int rth = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
-
-			double tw = w - 70;
-			double th = h - 60;
-
-			double scale = Math.max(rtw / tw, rth / th);
-
-			if (scale > 1D)
-			{
-				tw = rtw / scale;
-				th = rth / scale;
-			}
-
-			double tx = (w - tw) / 2D;
-			double ty = 22 + (h - th - 29) / 2D;
-
-			bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-			bufferbuilder.pos(tx, ty + th, 0D).tex(0D, 1D).endVertex();
-			bufferbuilder.pos(tx + tw, ty + th, 0D).tex(1D, 1D).endVertex();
-			bufferbuilder.pos(tx + tw, ty, 0D).tex(1D, 0D).endVertex();
-			bufferbuilder.pos(tx, ty, 0D).tex(0D, 0D).endVertex();
-			tessellator.draw();
-
-			GuiHelper.drawHollowRect((int) (tx - 1D), (int) (ty - 1D), (int) (tw + 2D), (int) (th + 2D), Color4I.BLACK, false);
+			maxBoxY = 27D;
+			maxBoxH = height - 52D;
 		}
 
-		theme.drawString(TextFormatting.BOLD + tutorial.title, x + w / 2, y + 10, Color4I.WHITE, Theme.CENTERED);
-		theme.drawString(tutorial.pages.get(page).description, x + w / 2, y + 23, Color4I.WHITE, Theme.CENTERED);
+		double canvasW = maxBoxW;
+		double canvasH = maxBoxH;
+
+		double scale = Math.max(p.width / maxBoxW, p.height / maxBoxH);
+
+		if (scale > 1D)
+		{
+			canvasW = p.width / scale;
+			canvasH = p.height / scale;
+		}
+
+		double canvasX = maxBoxX + (maxBoxW - canvasW) / 2D;
+		double canvasY = maxBoxY + (maxBoxH - canvasH) / 2D;
+
+		for (TutorialLayer layer : p.layers)
+		{
+			double tw = layer.width / p.width * canvasW;
+			double th = layer.height / p.height * canvasH;
+			double tx = canvasX + (layer.posX == -1D ? ((p.width - layer.width) / 2D) : layer.posX) / p.width * canvasW;
+			double ty = canvasY + (layer.posY == -1D ? ((p.height - layer.height) / 2D) : layer.posY) / p.height * canvasH;
+			layer.draw(tx, ty, tw, th);
+		}
+
+		Color4I col = p.border;
+
+		if (col.isEmpty())
+		{
+			col = tutorial.border;
+		}
+
+		if (Theme.renderDebugBoxes && col.isEmpty())
+		{
+			col = Color4I.WHITE;
+		}
+
+		if (Theme.renderDebugBoxes)
+		{
+			GuiHelper.drawHollowRect((int) maxBoxX - 1, (int) maxBoxY - 1, (int) maxBoxW + 2, (int) maxBoxH + 2, Color4I.GRAY.withAlpha(50), true);
+		}
+
+		GuiHelper.drawHollowRect((int) canvasX - 1, (int) canvasY - 1, (int) canvasW + 2, (int) canvasH + 2, col, false);
+
+		if (!tutorial.title.isEmpty())
+		{
+			theme.drawString(TextFormatting.BOLD + tutorial.title, x + w / 2, y + 10, Color4I.WHITE, Theme.CENTERED);
+		}
+
+		if (!p.description.isEmpty())
+		{
+			theme.drawString(p.description, x + w / 2, y + 23, Color4I.WHITE, Theme.CENTERED);
+		}
+
 		theme.drawString((page + 1) + " / " + tutorial.pages.size(), x + w / 2, y + h - 17, Color4I.WHITE, Theme.CENTERED);
 
 		theme.drawString(TextFormatting.BOLD + "<", x + 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
 		theme.drawString(TextFormatting.BOLD + (page == tutorial.pages.size() - 1 ? "X" : ">"), x + w - 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
+	}
+
+	@Override
+	public void addMouseOverText(List<String> list)
+	{
+		super.addMouseOverText(list);
+
+		if (Theme.renderDebugBoxes && !tutorial.pages.isEmpty())
+		{
+			//list.add("X: " + ((getMouseX() - boxX) / (double) boxW));
+			//list.add("Y: " + ((getMouseY() - boxY) / (double) boxH));
+		}
+	}
+
+	@Override
+	public boolean onClosedByKey(int key)
+	{
+		if (super.onClosedByKey(key))
+		{
+			openYesNo(I18n.format("ftbtutorialmod.gui.exit"), "", this::closeGui);
+		}
+
+		return false;
 	}
 
 	@Override
@@ -197,7 +263,7 @@ public class GuiTutorial extends GuiBase
 			if (page == tutorial.pages.size() - 1)
 			{
 				GuiHelper.playClickSound();
-				closeGui();
+				openYesNo("Exit tutorial?", "", this::closeGui);
 			}
 			else if (page(true))
 			{

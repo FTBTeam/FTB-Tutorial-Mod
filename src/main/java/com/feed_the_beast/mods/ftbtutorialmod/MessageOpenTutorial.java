@@ -54,6 +54,6 @@ public class MessageOpenTutorial extends MessageToClient
 	@SideOnly(Side.CLIENT)
 	public void onMessage()
 	{
-		new GuiTutorial(FTBTutorialMod.get(tutorial)).openGui();
+		FTBTutorialMod.openOnClient(tutorial);
 	}
 }

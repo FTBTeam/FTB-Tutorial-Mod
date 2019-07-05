@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
  * @author LatvianModder
  */
 @Mod.EventBusSubscriber(modid = FTBTutorialMod.MOD_ID, value = Side.CLIENT)
-public class FTBTutorialModEventHandler
+public class FTBTutorialModClientEventHandler
 {
 	@SubscribeEvent
 	public static void onCustomClick(CustomClickEvent event)
@@ -19,11 +19,11 @@ public class FTBTutorialModEventHandler
 		{
 			if (event.getID().getPath().equals("list"))
 			{
-				new GuiListTutorials().openGui();
+				FTBTutorialMod.openListOnClient();
 			}
 			else if (event.getID().getPath().startsWith("open:"))
 			{
-				new GuiTutorial(FTBTutorialMod.get(new ResourceLocation(event.getID().getPath().substring(5)))).openGui();
+				FTBTutorialMod.openOnClient(new ResourceLocation(event.getID().getPath().substring(5)));
 			}
 
 			event.setCanceled(true);

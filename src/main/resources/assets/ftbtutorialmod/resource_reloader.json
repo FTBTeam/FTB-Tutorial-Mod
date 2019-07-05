@@ -1,0 +1,5 @@
+{
+	"listeners": {
+		"ftb_tutorial_mod": "com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModReloadListener"
+	}
+}

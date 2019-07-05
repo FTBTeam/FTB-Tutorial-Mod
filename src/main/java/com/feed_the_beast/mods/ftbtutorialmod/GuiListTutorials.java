@@ -6,6 +6,7 @@ import com.feed_the_beast.ftblib.lib.gui.SimpleTextButton;
 import com.feed_the_beast.ftblib.lib.gui.misc.GuiButtonListBase;
 import com.feed_the_beast.ftblib.lib.io.DataReader;
 import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
+import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
 import com.google.gson.JsonElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -28,9 +29,9 @@ public class GuiListTutorials extends GuiButtonListBase
 	@Override
 	public void addButtons(Panel panel)
 	{
-		if (FTBTutorialMod.visibleTutorials == null)
+		if (Tutorial.visibleTutorials == null)
 		{
-			FTBTutorialMod.visibleTutorials = new ArrayList<>();
+			Tutorial.visibleTutorials = new ArrayList<>();
 			IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
 
 			for (String namespace : manager.getResourceDomains())
@@ -39,7 +40,7 @@ public class GuiListTutorials extends GuiButtonListBase
 				{
 					for (JsonElement element : DataReader.get(manager.getResource(new ResourceLocation(namespace, "tutorials/visible.json"))).json().getAsJsonArray())
 					{
-						FTBTutorialMod.visibleTutorials.add(FTBTutorialMod.get(new ResourceLocation(namespace, element.getAsString())));
+						Tutorial.visibleTutorials.add(Tutorial.get(new ResourceLocation(namespace, element.getAsString())));
 					}
 				}
 				catch (Exception ex)
@@ -48,7 +49,7 @@ public class GuiListTutorials extends GuiButtonListBase
 			}
 		}
 
-		for (Tutorial tutorial : FTBTutorialMod.visibleTutorials)
+		for (Tutorial tutorial : Tutorial.visibleTutorials)
 		{
 			panel.add(new SimpleTextButton(panel, tutorial.title, tutorial.icon)
 			{

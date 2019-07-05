@@ -26,6 +26,6 @@ public class CommandOpenTutorial extends CmdBase
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
 	{
 		checkArgs(sender, args, 2);
-		new MessageOpenTutorial(new ResourceLocation(args[0])).sendTo(getPlayer(server, sender, args[1]));
+		FTBTutorialMod.openOnServer(new ResourceLocation(args[0]), getPlayer(server, sender, args[1]));
 	}
 }
