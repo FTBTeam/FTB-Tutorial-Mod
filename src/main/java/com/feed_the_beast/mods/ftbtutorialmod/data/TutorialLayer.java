@@ -1,6 +1,8 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
+import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonObject;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -8,19 +10,21 @@ import com.google.gson.JsonObject;
 public abstract class TutorialLayer
 {
 	public final TutorialPage page;
+	public final int index;
 	public double posX, posY;
 	public double width, height;
 
 	public TutorialLayer(TutorialPage p)
 	{
 		page = p;
+		index = page.layers.size();
 		posX = -1D;
 		posY = -1D;
 		width = p.width;
 		height = p.height;
 	}
 
-	public void readProperties(JsonObject o)
+	public void readProperties(ResourceLocation id, JsonObject o)
 	{
 		if (o.has("x"))
 		{
@@ -43,5 +47,5 @@ public abstract class TutorialLayer
 		}
 	}
 
-	public abstract void draw(double x, double y, double w, double h);
+	public abstract void draw(GuiTutorial gui, double x, double y, double w, double h);
 }

@@ -119,43 +119,42 @@ public class Tutorial
 
 					for (JsonElement lo : p.get("layers").getAsJsonArray())
 					{
-						JsonObject o;
-
-						if (lo.isJsonObject())
+						if (!lo.isJsonObject())
 						{
-							o = lo.getAsJsonObject();
-						}
-						else
-						{
-							o = new JsonObject();
-							o.add("layer", lo);
+							continue;
 						}
 
-						String layer = o.has("layer") ? o.get("layer").getAsString() : "";
+						JsonObject o = lo.getAsJsonObject();
 
-						TutorialLayer l = null;
+						String type = o.has("type") ? o.get("type").getAsString() : "";
 
-						if (!layer.isEmpty())
+						if (type.isEmpty())
 						{
-							if (layer.equals("border"))
-							{
+							continue;
+						}
+
+						TutorialLayer l;
+
+						switch (type)
+						{
+							case "image":
+								l = new ImageLayer(page);
+								break;
+							case "border":
 								l = new BorderLayer(page);
-							}
-							else if (layer.indexOf(':') == -1 && !layer.startsWith("#"))
-							{
-								l = new IconLayer(page, Icon.getIcon(new ResourceLocation(id.getNamespace(), "tutorials/" + id.getPath() + "/" + layer).toString()));
-							}
-							else
-							{
-								l = new IconLayer(page, Icon.getIcon(layer));
-							}
+								break;
+							case "text":
+								l = new TextLayer(page);
+								break;
+							case "hover_text":
+								l = new HoverTextLayer(page);
+								break;
+							default:
+								continue;
 						}
 
-						if (l != null)
-						{
-							l.readProperties(o);
-							page.layers.add(l);
-						}
+						l.readProperties(id, o);
+						page.layers.add(l);
 					}
 
 					tutorial.pages.add(page);

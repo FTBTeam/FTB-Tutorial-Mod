@@ -5,6 +5,7 @@ import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
 import com.feed_the_beast.ftblib.lib.gui.Theme;
 import com.feed_the_beast.ftblib.lib.icon.Color4I;
 import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
+import com.feed_the_beast.mods.ftbtutorialmod.data.HoverTextLayer;
 import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
 import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialLayer;
 import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialPage;
@@ -159,7 +160,12 @@ public class GuiTutorial extends GuiBase
 			double th = layer.height / p.height * canvasH;
 			double tx = canvasX + (layer.posX == -1D ? ((p.width - layer.width) / 2D) : layer.posX) / p.width * canvasW;
 			double ty = canvasY + (layer.posY == -1D ? ((p.height - layer.height) / 2D) : layer.posY) / p.height * canvasH;
-			layer.draw(tx, ty, tw, th);
+			layer.draw(this, tx, ty, tw, th);
+
+			if (Theme.renderDebugBoxes)
+			{
+				GuiHelper.drawHollowRect((int) tx - 1, (int) ty - 1, (int) tw + 2, (int) th + 2, Color4I.GRAY.withAlpha(50), true);
+			}
 		}
 
 		Color4I col = p.border;
@@ -202,10 +208,50 @@ public class GuiTutorial extends GuiBase
 	{
 		super.addMouseOverText(list);
 
-		if (Theme.renderDebugBoxes && !tutorial.pages.isEmpty())
+		if (!tutorial.pages.isEmpty())
 		{
-			//list.add("X: " + ((getMouseX() - boxX) / (double) boxW));
-			//list.add("Y: " + ((getMouseY() - boxY) / (double) boxH));
+			TutorialPage p = tutorial.pages.get(page);
+
+			double maxBoxW = width - 72D;
+			double maxBoxH = height - 62D;
+			double maxBoxX = (width - maxBoxW) / 2D;
+			double maxBoxY = 38D;
+
+			if (p.description.isEmpty())
+			{
+				maxBoxY = 27D;
+				maxBoxH = height - 52D;
+			}
+
+			double canvasW = maxBoxW;
+			double canvasH = maxBoxH;
+
+			double scale = Math.max(p.width / maxBoxW, p.height / maxBoxH);
+
+			if (scale > 1D)
+			{
+				canvasW = p.width / scale;
+				canvasH = p.height / scale;
+			}
+
+			double canvasX = maxBoxX + (maxBoxW - canvasW) / 2D;
+			double canvasY = maxBoxY + (maxBoxH - canvasH) / 2D;
+
+			for (TutorialLayer layer : p.layers)
+			{
+				if (layer instanceof HoverTextLayer)
+				{
+					double tw = layer.width / p.width * canvasW;
+					double th = layer.height / p.height * canvasH;
+					double tx = canvasX + (layer.posX == -1D ? ((p.width - layer.width) / 2D) : layer.posX) / p.width * canvasW;
+					double ty = canvasY + (layer.posY == -1D ? ((p.height - layer.height) / 2D) : layer.posY) / p.height * canvasH;
+
+					if (getMouseX() >= tx && getMouseY() >= ty && getMouseX() < tx + tw && getMouseY() < ty + th)
+					{
+						list.addAll(((HoverTextLayer) layer).text);
+					}
+				}
+			}
 		}
 	}
 
