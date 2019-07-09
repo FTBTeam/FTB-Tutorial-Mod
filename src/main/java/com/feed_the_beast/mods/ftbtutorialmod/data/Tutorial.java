@@ -4,6 +4,7 @@ import com.feed_the_beast.ftblib.lib.icon.Color4I;
 import com.feed_the_beast.ftblib.lib.icon.Icon;
 import com.feed_the_beast.ftblib.lib.icon.ItemIcon;
 import com.feed_the_beast.ftblib.lib.io.DataReader;
+import com.feed_the_beast.ftblib.lib.util.JsonUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -51,7 +52,7 @@ public class Tutorial
 
 				if (t.has("title"))
 				{
-					tutorial.title = t.get("title").getAsString();
+					tutorial.title = JsonUtils.deserializeTextComponent(t.get("title")).getFormattedText();
 				}
 
 				if (t.has("icon"))
@@ -85,7 +86,7 @@ public class Tutorial
 
 					if (p.has("description"))
 					{
-						page.description = p.get("description").getAsString();
+						page.description = JsonUtils.deserializeTextComponent(p.get("description")).getFormattedText();
 					}
 
 					if (p.has("width"))
