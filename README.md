@@ -1,1 +1,1 @@
-# FTB Tutorial Mod [![](http://cf.way2muchnoise.eu/ftb-tutorial-mod.svg)](https://minecraft.curseforge.com/projects/tutorial-mod) [![](http://cf.way2muchnoise.eu/versions/tutorial-mod.svg)](https://minecraft.curseforge.com/projects/tutorial-mod)
+# FTB Tutorial Mod [![](http://cf.way2muchnoise.eu/ftb-tutorial-mod.svg) ![](https://cf.way2muchnoise.eu/packs/ftb-tutorial-mod.svg) ![](http://cf.way2muchnoise.eu/versions/ftb-tutorial-mod.svg)](https://www.curseforge.com/minecraft/mc-mods/ftb-tutorial-mod)
