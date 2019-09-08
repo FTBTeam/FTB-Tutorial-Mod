@@ -13,7 +13,7 @@ public class CommandOpenTutorial extends CmdBase
 {
 	public CommandOpenTutorial()
 	{
-		super("open_tutorial", Level.ALL);
+		super("open_tutorial", Level.OP_OR_SP);
 	}
 
 	@Override
@@ -26,6 +26,6 @@ public class CommandOpenTutorial extends CmdBase
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
 	{
 		checkArgs(sender, args, 2);
-		FTBTutorialMod.openOnServer(new ResourceLocation(args[0]), getPlayer(server, sender, args[1]));
+		FTBTutorialMod.INSTANCE.openOnServer(new ResourceLocation(args[0]), getPlayer(server, sender, args[1]));
 	}
 }

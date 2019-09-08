@@ -1,26 +1,17 @@
-package com.feed_the_beast.mods.ftbtutorialmod;
+package com.feed_the_beast.mods.ftbtutorialmod.net;
 
 import com.feed_the_beast.ftblib.lib.io.DataIn;
 import com.feed_the_beast.ftblib.lib.io.DataOut;
 import com.feed_the_beast.ftblib.lib.net.MessageToClient;
 import com.feed_the_beast.ftblib.lib.net.NetworkWrapper;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialMod;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author LatvianModder
  */
 public class MessageOpenTutorial extends MessageToClient
 {
-	public static NetworkWrapper NET;
-
-	public static void init()
-	{
-		NET = NetworkWrapper.newWrapper(FTBTutorialMod.MOD_ID);
-		NET.register(new MessageOpenTutorial());
-	}
-
 	private ResourceLocation tutorial;
 
 	public MessageOpenTutorial()
@@ -35,7 +26,7 @@ public class MessageOpenTutorial extends MessageToClient
 	@Override
 	public NetworkWrapper getWrapper()
 	{
-		return NET;
+		return FTBTutorialModNetHandler.NET;
 	}
 
 	@Override
@@ -51,9 +42,8 @@ public class MessageOpenTutorial extends MessageToClient
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void onMessage()
 	{
-		FTBTutorialMod.openOnClient(tutorial);
+		FTBTutorialMod.INSTANCE.openOnClient(tutorial);
 	}
 }
