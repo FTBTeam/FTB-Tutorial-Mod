@@ -2,6 +2,7 @@ package com.feed_the_beast.mods.ftbtutorialmod.kubejs;
 
 import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialMod;
 import com.feed_the_beast.mods.ftbtutorialmod.data.Overlay;
+import com.feed_the_beast.mods.ftbtutorialmod.net.MessageCloseOverlay;
 import com.feed_the_beast.mods.ftbtutorialmod.net.MessageOpenTutorial;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.util.ID;
@@ -22,17 +23,40 @@ public class FTBTutorialModPlayerData
 
 	public void openOverlay(Overlay o)
 	{
-		o.open(playerData.getPlayerEntity());
+		if (o != null)
+		{
+			o.open(playerData.getPlayerEntity());
+		}
+		else
+		{
+			FTBTutorialMod.LOGGER.error("Can't open null overlay!");
+		}
 	}
 
 	public void closeOverlay(Overlay o)
 	{
-		o.close(playerData.getPlayerEntity());
+		if (o != null)
+		{
+			o.close(playerData.getPlayerEntity());
+		}
+		else
+		{
+			FTBTutorialMod.LOGGER.error("Can't close null overlay!");
+		}
 	}
 
 	public void closeOverlay(String id)
 	{
-		closeOverlay(new Overlay(id));
+		EntityPlayer player = playerData.getPlayerEntity();
+
+		if (player instanceof EntityPlayerMP)
+		{
+			new MessageCloseOverlay(id).sendTo((EntityPlayerMP) player);
+		}
+		else
+		{
+			FTBTutorialMod.PROXY.closeOverlay(id);
+		}
 	}
 
 	public void closeAllOverlays()

@@ -13,6 +13,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author LatvianModder
  */
@@ -63,6 +66,7 @@ public class FTBTutorialModClientEventHandler
 		GlStateManager.enableBlend();
 		GlStateManager.disableLighting();
 
+		int maxWidth = event.getResolution().getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
@@ -70,11 +74,18 @@ public class FTBTutorialModClientEventHandler
 
 		for (Overlay o : FTBTutorialModClient.activeOverlays.values())
 		{
-			int mw = 0;
+			List<String> list = new ArrayList<>();
 
 			for (ITextComponent t : o.text)
 			{
-				mw = Math.max(mw, mc.fontRenderer.getStringWidth(t.getFormattedText()));
+				list.addAll(mc.fontRenderer.listFormattedStringToWidth(t.getFormattedText(), maxWidth));
+			}
+
+			int mw = 0;
+
+			for (String s : list)
+			{
+				mw = Math.max(mw, mc.fontRenderer.getStringWidth(s));
 			}
 
 			if (mw == 0)
@@ -82,15 +93,15 @@ public class FTBTutorialModClientEventHandler
 				return;
 			}
 
-			o.color.withAlpha(200).draw(spx, spy, mw + p * 2, o.text.size() * l + p * 2 - 2);
-			GuiHelper.drawHollowRect(spx, spy, mw + p * 2, o.text.size() * l + p * 2 - 2, o.color, false);
+			o.color.withAlpha(200).draw(spx, spy, mw + p * 2, list.size() * l + p * 2 - 2);
+			GuiHelper.drawHollowRect(spx, spy, mw + p * 2, list.size() * l + p * 2 - 2, o.color, false);
 
-			for (int i = 0; i < o.text.size(); i++)
+			for (int i = 0; i < list.size(); i++)
 			{
-				mc.fontRenderer.drawStringWithShadow(o.text.get(i).getFormattedText(), spx + p, spy + i * l + p, 0xFFFFFFFF);
+				mc.fontRenderer.drawStringWithShadow(list.get(i), spx + p, spy + i * l + p, 0xFFFFFFFF);
 			}
 
-			spy += o.text.size() * l + p * 2 + (p - 2);
+			spy += list.size() * l + p * 2 + (p - 2);
 		}
 
 		GlStateManager.popMatrix();
