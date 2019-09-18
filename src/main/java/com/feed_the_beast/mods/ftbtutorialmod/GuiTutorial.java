@@ -5,6 +5,7 @@ import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
 import com.feed_the_beast.ftblib.lib.gui.Theme;
 import com.feed_the_beast.ftblib.lib.icon.Color4I;
 import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
+import com.feed_the_beast.mods.ftbtutorialmod.data.ButtonLayer;
 import com.feed_the_beast.mods.ftbtutorialmod.data.HoverTextLayer;
 import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
 import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialLayer;
@@ -239,7 +240,7 @@ public class GuiTutorial extends GuiBase
 
 			for (TutorialLayer layer : p.layers)
 			{
-				if (layer instanceof HoverTextLayer)
+				if (layer instanceof HoverTextLayer || layer instanceof ButtonLayer)
 				{
 					double tw = layer.width / p.width * canvasW;
 					double th = layer.height / p.height * canvasH;
@@ -248,7 +249,14 @@ public class GuiTutorial extends GuiBase
 
 					if (getMouseX() >= tx && getMouseY() >= ty && getMouseX() < tx + tw && getMouseY() < ty + th)
 					{
-						list.addAll(((HoverTextLayer) layer).text);
+						if (layer instanceof HoverTextLayer)
+						{
+							list.addAll(((HoverTextLayer) layer).text);
+						}
+						else
+						{
+							list.addAll(((ButtonLayer) layer).hover);
+						}
 					}
 				}
 			}
@@ -317,6 +325,67 @@ public class GuiTutorial extends GuiBase
 			}
 
 			return true;
+		}
+
+		if (!tutorial.pages.isEmpty())
+		{
+			TutorialPage p = tutorial.pages.get(page);
+
+			double maxBoxW = width - 72D;
+			double maxBoxH = height - 62D;
+			double maxBoxX = (width - maxBoxW) / 2D;
+			double maxBoxY = 38D;
+
+			if (p.description.isEmpty())
+			{
+				maxBoxY = 27D;
+				maxBoxH = height - 52D;
+			}
+
+			double canvasW = maxBoxW;
+			double canvasH = maxBoxH;
+
+			double scale = Math.max(p.width / maxBoxW, p.height / maxBoxH);
+
+			if (scale > 1D)
+			{
+				canvasW = p.width / scale;
+				canvasH = p.height / scale;
+			}
+
+			double canvasX = maxBoxX + (maxBoxW - canvasW) / 2D;
+			double canvasY = maxBoxY + (maxBoxH - canvasH) / 2D;
+
+			for (TutorialLayer layer : p.layers)
+			{
+				if (layer instanceof ButtonLayer)
+				{
+					double tw = layer.width / p.width * canvasW;
+					double th = layer.height / p.height * canvasH;
+					double tx = canvasX + (layer.posX == -1D ? ((p.width - layer.width) / 2D) : layer.posX) / p.width * canvasW;
+					double ty = canvasY + (layer.posY == -1D ? ((p.height - layer.height) / 2D) : layer.posY) / p.height * canvasH;
+
+					if (getMouseX() >= tx && getMouseY() >= ty && getMouseX() < tx + tw && getMouseY() < ty + th)
+					{
+						String click = ((ButtonLayer) layer).click;
+
+						if (click.equals("next_page"))
+						{
+							page(true);
+						}
+						else if (click.equals("previous_page"))
+						{
+							page(false);
+						}
+						else
+						{
+							handleClick(click);
+						}
+
+						GuiHelper.playClickSound();
+					}
+				}
+			}
 		}
 
 		return super.mousePressed(button);

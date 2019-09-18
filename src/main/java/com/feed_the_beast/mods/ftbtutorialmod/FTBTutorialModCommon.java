@@ -1,6 +1,5 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
-import com.feed_the_beast.mods.ftbtutorialmod.data.Overlay;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -17,18 +16,6 @@ public class FTBTutorialModCommon
 	}
 
 	public void openList()
-	{
-	}
-
-	public void openOverlay(ResourceLocation id)
-	{
-	}
-
-	public void openOverlay(Overlay o)
-	{
-	}
-
-	public void closeOverlay(String s)
 	{
 	}
 }

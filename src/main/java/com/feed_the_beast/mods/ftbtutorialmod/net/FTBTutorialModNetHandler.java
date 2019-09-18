@@ -14,7 +14,5 @@ public class FTBTutorialModNetHandler
 	{
 		NET = NetworkWrapper.newWrapper(FTBTutorialMod.MOD_ID);
 		NET.register(new MessageOpenTutorial());
-		NET.register(new MessageCloseOverlay());
-		NET.register(new MessageOpenOverlay());
 	}
 }

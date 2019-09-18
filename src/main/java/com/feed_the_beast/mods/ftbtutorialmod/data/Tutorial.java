@@ -150,6 +150,9 @@ public class Tutorial
 							case "hover_text":
 								l = new HoverTextLayer(page);
 								break;
+							case "button":
+								l = new ButtonLayer(page);
+								break;
 							default:
 								continue;
 						}

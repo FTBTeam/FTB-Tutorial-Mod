@@ -1,7 +1,7 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
 import com.feed_the_beast.ftblib.FTBLib;
-import com.feed_the_beast.mods.ftbtutorialmod.kubejs.FTBTutorialModKubeJSIngegration;
+import com.feed_the_beast.mods.ftbtutorialmod.kubejs.FTBTutorialModKubeJSIntegration;
 import com.feed_the_beast.mods.ftbtutorialmod.net.FTBTutorialModNetHandler;
 import com.feed_the_beast.mods.ftbtutorialmod.net.MessageOpenTutorial;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -56,7 +56,7 @@ public class FTBTutorialMod
 	{
 		if (Loader.isModLoaded("kubejs"))
 		{
-			MinecraftForge.EVENT_BUS.register(FTBTutorialModKubeJSIngegration.class);
+			MinecraftForge.EVENT_BUS.register(FTBTutorialModKubeJSIntegration.class);
 		}
 	}
 

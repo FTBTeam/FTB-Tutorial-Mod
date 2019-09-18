@@ -1,6 +1,7 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.util.ResourceLocation;
 
@@ -26,6 +27,19 @@ public abstract class TutorialLayer
 
 	public void readProperties(ResourceLocation id, JsonObject o)
 	{
+		if (o.has("pos"))
+		{
+			JsonArray a = o.get("pos").getAsJsonArray();
+
+			if (a.size() == 4)
+			{
+				posX = a.get(0).getAsDouble();
+				posY = a.get(1).getAsDouble();
+				width = a.get(2).getAsDouble();
+				height = a.get(3).getAsDouble();
+			}
+		}
+
 		if (o.has("x"))
 		{
 			posX = o.get("x").getAsDouble();
