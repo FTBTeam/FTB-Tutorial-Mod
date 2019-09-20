@@ -275,6 +275,17 @@ public class GuiTutorial extends GuiBase
 	}
 
 	@Override
+	public void onClosed()
+	{
+		super.onClosed();
+
+		if (!tutorial.postAction.isEmpty())
+		{
+			handleClick(tutorial.postAction);
+		}
+	}
+
+	@Override
 	public boolean keyPressed(int key, char keyChar)
 	{
 		if (key == Keyboard.KEY_LEFT || key == Keyboard.KEY_BACK)

@@ -28,6 +28,7 @@ public class Tutorial
 	public final List<TutorialPage> pages;
 	public ResourceLocation background;
 	public Color4I border;
+	public String postAction;
 
 	public Tutorial()
 	{
@@ -36,6 +37,7 @@ public class Tutorial
 		pages = new ArrayList<>();
 		background = null;
 		border = Icon.EMPTY;
+		postAction = "";
 	}
 
 	public static Tutorial get(ResourceLocation id)
@@ -164,6 +166,10 @@ public class Tutorial
 					tutorial.pages.add(page);
 				}
 
+				if (t.has("post_action"))
+				{
+					tutorial.postAction = t.get("post_action").getAsString();
+				}
 			}
 			catch (Exception ex)
 			{
