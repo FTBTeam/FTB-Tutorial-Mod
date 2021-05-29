@@ -1,7 +1,7 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
-import net.minecraft.util.ResourceLocation;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ import java.util.List;
 public class TutorialPage
 {
 	public final Tutorial tutorial;
-	public String description;
 	public final List<TutorialLayer> layers;
+	public String description;
 	public ResourceLocation background;
 	public Color4I border;
 	public double width;

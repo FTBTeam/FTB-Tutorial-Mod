@@ -1,49 +1,38 @@
 package com.feed_the_beast.mods.ftbtutorialmod.net;
 
-import com.feed_the_beast.ftblib.lib.io.DataIn;
-import com.feed_the_beast.ftblib.lib.io.DataOut;
-import com.feed_the_beast.ftblib.lib.net.MessageToClient;
-import com.feed_the_beast.ftblib.lib.net.NetworkWrapper;
-import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialMod;
-import net.minecraft.util.ResourceLocation;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModClient;
+import dev.ftb.mods.ftblibrary.net.snm.BaseS2CPacket;
+import dev.ftb.mods.ftblibrary.net.snm.PacketID;
+import me.shedaniel.architectury.networking.NetworkManager;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
  */
-public class MessageOpenTutorial extends MessageToClient
-{
-	private ResourceLocation tutorial;
+public class MessageOpenTutorial extends BaseS2CPacket {
+	private final ResourceLocation tutorial;
 
-	public MessageOpenTutorial()
-	{
-	}
-
-	public MessageOpenTutorial(ResourceLocation id)
-	{
+	public MessageOpenTutorial(ResourceLocation id) {
 		tutorial = id;
 	}
 
-	@Override
-	public NetworkWrapper getWrapper()
-	{
-		return FTBTutorialModNetHandler.NET;
+	public MessageOpenTutorial(FriendlyByteBuf buf) {
+		tutorial = buf.readResourceLocation();
 	}
 
 	@Override
-	public void writeData(DataOut data)
-	{
-		data.writeResourceLocation(tutorial);
+	public PacketID getId() {
+		return FTBTutorialModNetHandler.OPEN_TUTORIAL;
 	}
 
 	@Override
-	public void readData(DataIn data)
-	{
-		tutorial = data.readResourceLocation();
+	public void write(FriendlyByteBuf friendlyByteBuf) {
+		friendlyByteBuf.writeResourceLocation(tutorial);
 	}
 
 	@Override
-	public void onMessage()
-	{
-		FTBTutorialMod.INSTANCE.openOnClient(tutorial);
+	public void handle(NetworkManager.PacketContext packetContext) {
+		FTBTutorialModClient.open(tutorial);
 	}
 }

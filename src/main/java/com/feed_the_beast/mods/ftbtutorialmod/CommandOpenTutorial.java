@@ -1,31 +1,32 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
-import com.feed_the_beast.ftblib.lib.command.CmdBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Collection;
 
 /**
  * @author LatvianModder
  */
-public class CommandOpenTutorial extends CmdBase
-{
-	public CommandOpenTutorial()
-	{
-		super("open_tutorial", Level.OP_OR_SP);
+public class CommandOpenTutorial {
+	public static ArgumentBuilder<CommandSourceStack, ?> register() {
+		return Commands.literal("open_tutorial")
+				.then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("resource", StringArgumentType.string())).executes(CommandOpenTutorial::execute));
 	}
 
-	@Override
-	public boolean isUsernameIndex(String[] args, int index)
-	{
-		return index == 1;
-	}
+	private static int execute(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(commandContext, "targets");
+		String resource = StringArgumentType.getString(commandContext, "resource");
 
-	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-	{
-		checkArgs(sender, args, 2);
-		FTBTutorialMod.INSTANCE.openOnServer(new ResourceLocation(args[0]), getPlayer(server, sender, args[1]));
+		players.forEach(e -> FTBTutorialMod.INSTANCE.openOnServer(new ResourceLocation(resource), e));
+
+		return 0;
 	}
 }

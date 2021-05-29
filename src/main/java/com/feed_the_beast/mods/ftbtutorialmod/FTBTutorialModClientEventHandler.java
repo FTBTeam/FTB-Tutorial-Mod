@@ -1,32 +1,31 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
-import com.feed_the_beast.ftblib.events.client.CustomClickEvent;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import dev.ftb.mods.ftblibrary.ui.CustomClickEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResult;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = FTBTutorialMod.MOD_ID, value = Side.CLIENT)
 public class FTBTutorialModClientEventHandler
 {
-	@SubscribeEvent
-	public static void onCustomClick(CustomClickEvent event)
+	public static InteractionResult onCustomClick(CustomClickEvent event)
 	{
-		if (event.getID().getNamespace().equals(FTBTutorialMod.MOD_ID))
+		if (event.getId().getNamespace().equals(FTBTutorialMod.MOD_ID))
 		{
-			if (event.getID().getPath().equals("list"))
+			if (event.getId().getPath().equals("list"))
 			{
-				FTBTutorialMod.INSTANCE.openListOnClient();
+				FTBTutorialModClient.openList();
 			}
-			else if (event.getID().getPath().startsWith("open:"))
+			else if (event.getId().getPath().startsWith("open:"))
 			{
-				FTBTutorialMod.INSTANCE.openOnClient(new ResourceLocation(event.getID().getPath().substring(5)));
+				FTBTutorialModClient.open(new ResourceLocation(event.getId().getPath().substring(5)));
 			}
 
-			event.setCanceled(true);
+			return InteractionResult.SUCCESS;
+//			event.setCanceled(true);
 		}
+
+		return InteractionResult.PASS;
 	}
 }

@@ -1,28 +1,32 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
-import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
-import com.feed_the_beast.ftblib.lib.gui.Panel;
-import com.feed_the_beast.ftblib.lib.gui.SimpleTextButton;
-import com.feed_the_beast.ftblib.lib.gui.misc.GuiButtonListBase;
-import com.feed_the_beast.ftblib.lib.io.DataReader;
-import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
 import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import dev.ftb.mods.ftblibrary.ui.GuiHelper;
+import dev.ftb.mods.ftblibrary.ui.Panel;
+import dev.ftb.mods.ftblibrary.ui.SimpleTextButton;
+import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
+import dev.ftb.mods.ftblibrary.ui.misc.ButtonListBaseScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.sounds.SoundEvents;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
  * @author LatvianModder
  */
-public class GuiListTutorials extends GuiButtonListBase
+public class GuiListTutorials extends ButtonListBaseScreen
 {
 	public GuiListTutorials()
 	{
-		setTitle(I18n.format("sidebar_button.ftbtutorialmod.tutorials"));
+		setTitle(new TranslatableComponent("sidebar_button.ftbtutorialmod.tutorials"));
 		setHasSearchBox(true);
 	}
 
@@ -32,13 +36,16 @@ public class GuiListTutorials extends GuiButtonListBase
 		if (Tutorial.visibleTutorials == null)
 		{
 			Tutorial.visibleTutorials = new ArrayList<>();
-			IResourceManager manager = Minecraft.getMinecraft().getResourceManager();
+			ResourceManager manager = Minecraft.getInstance().getResourceManager();
 
-			for (String namespace : manager.getResourceDomains())
+			for (String namespace : manager.getNamespaces())
 			{
 				try
 				{
-					for (JsonElement element : DataReader.get(manager.getResource(new ResourceLocation(namespace, "tutorials/visible.json"))).json().getAsJsonArray())
+					JsonParser parser = new JsonParser();
+					InputStream inputStream = manager.getResource(new ResourceLocation(namespace, "tutorials/visible.json")).getInputStream();
+
+					for (JsonElement element : parser.parse(new InputStreamReader(inputStream)).getAsJsonArray())
 					{
 						Tutorial.visibleTutorials.add(Tutorial.get(new ResourceLocation(namespace, element.getAsString())));
 					}
@@ -51,12 +58,12 @@ public class GuiListTutorials extends GuiButtonListBase
 
 		for (Tutorial tutorial : Tutorial.visibleTutorials)
 		{
-			panel.add(new SimpleTextButton(panel, tutorial.title, tutorial.icon)
+			panel.add(new SimpleTextButton(panel, new TextComponent(tutorial.title), tutorial.icon)
 			{
 				@Override
 				public void onClicked(MouseButton button)
 				{
-					GuiHelper.playClickSound();
+					GuiHelper.playSound(SoundEvents.UI_BUTTON_CLICK, 1);
 					new GuiTutorial(tutorial).openGui();
 				}
 			});

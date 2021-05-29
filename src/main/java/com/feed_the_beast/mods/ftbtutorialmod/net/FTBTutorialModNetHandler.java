@@ -1,18 +1,17 @@
 package com.feed_the_beast.mods.ftbtutorialmod.net;
 
-import com.feed_the_beast.ftblib.lib.net.NetworkWrapper;
 import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialMod;
+import dev.ftb.mods.ftblibrary.net.snm.PacketID;
+import dev.ftb.mods.ftblibrary.net.snm.SimpleNetworkManager;
 
 /**
  * @author LatvianModder
  */
-public class FTBTutorialModNetHandler
-{
-	public static NetworkWrapper NET;
+public interface FTBTutorialModNetHandler {
+	SimpleNetworkManager NET = SimpleNetworkManager.create(FTBTutorialMod.MOD_ID);
 
-	public static void init()
-	{
-		NET = NetworkWrapper.newWrapper(FTBTutorialMod.MOD_ID);
-		NET.register(new MessageOpenTutorial());
+	PacketID OPEN_TUTORIAL = NET.registerS2C("open_tutorial", MessageOpenTutorial::new);
+
+	static void init() {
 	}
 }

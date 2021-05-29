@@ -1,9 +1,10 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.icon.Icon;
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonObject;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.ftb.mods.ftblibrary.icon.Icon;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -39,8 +40,8 @@ public class ImageLayer extends TutorialLayer
 	}
 
 	@Override
-	public void draw(GuiTutorial gui, double x, double y, double w, double h)
+	public void draw(PoseStack matrix, GuiTutorial gui, double x, double y, double w, double h)
 	{
-		image.draw((int) x, (int) y, (int) w, (int) h);
+		image.draw(matrix, (int) x, (int) y, (int) w, (int) h);
 	}
 }

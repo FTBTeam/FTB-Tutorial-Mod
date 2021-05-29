@@ -1,11 +1,11 @@
 package com.feed_the_beast.mods.ftbtutorialmod.kubejs;
 
-import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialMod;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModClient;
 import com.feed_the_beast.mods.ftbtutorialmod.net.MessageOpenTutorial;
 import dev.latvian.kubejs.player.PlayerDataJS;
-import dev.latvian.kubejs.util.ID;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @author LatvianModder
@@ -19,17 +19,17 @@ public class FTBTutorialModPlayerData
 		playerData = p;
 	}
 
-	public void openTutorial(Object id)
+	public void openTutorial(ResourceLocation id)
 	{
-		EntityPlayer player = playerData.getPlayerEntity();
+		Player player = playerData.getMinecraftPlayer();
 
-		if (player instanceof EntityPlayerMP)
+		if (player instanceof ServerPlayer)
 		{
-			new MessageOpenTutorial(ID.of(id).mc()).sendTo((EntityPlayerMP) player);
+			new MessageOpenTutorial(id).sendTo((ServerPlayer) player);
 		}
 		else
 		{
-			FTBTutorialMod.PROXY.open(ID.of(id).mc());
+			FTBTutorialModClient.open(id);
 		}
 	}
 }

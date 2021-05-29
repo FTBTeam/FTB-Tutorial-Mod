@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+issueTrackerURL = "https://github.com/FTBTeam/FTB-Tutorial-Mod/issues"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "ftbtutorialmod"
+version = "${version}"
+displayName = "FTB Tutorial Mod"
+authors = "LatvianModder, MichaelHillcox"
+logo = "assets/ftbtutorialmod/textures/logo.png"
+description = '''
+Tutorial! Duh
+'''
+
+[[dependencies.ftbjarmod]]
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbjarmod]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,)"
+ordering = "NONE"
+side = "BOTH"

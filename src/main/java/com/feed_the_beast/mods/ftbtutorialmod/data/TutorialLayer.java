@@ -3,7 +3,8 @@ package com.feed_the_beast.mods.ftbtutorialmod.data;
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -61,5 +62,5 @@ public abstract class TutorialLayer
 		}
 	}
 
-	public abstract void draw(GuiTutorial gui, double x, double y, double w, double h);
+	public abstract void draw(PoseStack matrixStack, GuiTutorial gui, double x, double y, double w, double h);
 }

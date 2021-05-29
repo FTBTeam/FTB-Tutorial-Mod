@@ -1,16 +1,18 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
-import com.feed_the_beast.ftblib.lib.icon.Icon;
-import com.feed_the_beast.ftblib.lib.icon.ItemIcon;
-import com.feed_the_beast.ftblib.lib.io.DataReader;
-import com.feed_the_beast.ftblib.lib.util.JsonUtils;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.icon.Icon;
+import dev.ftb.mods.ftblibrary.icon.ItemIcon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +24,9 @@ public class Tutorial
 {
 	public static final HashMap<ResourceLocation, Tutorial> tutorials = new HashMap<>();
 	public static List<Tutorial> visibleTutorials = null;
-
+	public final List<TutorialPage> pages;
 	public String title;
 	public Icon icon;
-	public final List<TutorialPage> pages;
 	public ResourceLocation background;
 	public Color4I border;
 	public String postAction;
@@ -50,11 +51,15 @@ public class Tutorial
 
 			try
 			{
-				JsonObject t = DataReader.get(Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation(id.getNamespace(), "tutorials/" + id.getPath() + "/index.json"))).json().getAsJsonObject();
+				JsonParser parser = new JsonParser();
+				InputStream inputStream = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(id.getNamespace(), "tutorials/" + id.getPath() + "/index.json")).getInputStream();
+
+				JsonObject t = parser.parse(new InputStreamReader(inputStream)).getAsJsonObject();
+//				JsonObject t = DataReader.get(Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(id.getNamespace(), "tutorials/" + id.getPath() + "/index.json"))).json().getAsJsonObject();
 
 				if (t.has("title"))
 				{
-					tutorial.title = JsonUtils.deserializeTextComponent(t.get("title")).getFormattedText();
+					tutorial.title = FTBTutorialModClient.parse(t.get("title").getAsString()).getString();
 				}
 
 				if (t.has("icon"))
@@ -88,7 +93,7 @@ public class Tutorial
 
 					if (p.has("description"))
 					{
-						page.description = JsonUtils.deserializeTextComponent(p.get("description")).getFormattedText();
+						page.description = FTBTutorialModClient.parse(p.get("description").getAsString()).getString();
 					}
 
 					if (p.has("width"))

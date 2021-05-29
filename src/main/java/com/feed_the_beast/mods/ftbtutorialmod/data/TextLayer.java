@@ -1,16 +1,16 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.gui.Theme;
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
-import com.feed_the_beast.ftblib.lib.io.Bits;
-import com.feed_the_beast.ftblib.lib.util.JsonUtils;
-import com.feed_the_beast.ftblib.lib.util.StringJoiner;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModClient;
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.math.Bits;
+import dev.ftb.mods.ftblibrary.ui.Theme;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,11 @@ import java.util.List;
  */
 public class TextLayer extends TutorialLayer
 {
-	private String combinedText;
 	public double textHeight;
-	private int flags;
 	public Color4I color;
 	public double lineSpacing;
+	private String combinedText;
+	private int flags;
 
 	public TextLayer(TutorialPage p)
 	{
@@ -50,11 +50,10 @@ public class TextLayer extends TutorialLayer
 
 			for (JsonElement e : o.get("text").getAsJsonArray())
 			{
-				ITextComponent component = JsonUtils.deserializeTextComponent(e);
-				text.add(component == null ? "" : component.getFormattedText());
+				text.add(FTBTutorialModClient.parse(e.getAsString()).getString());
 			}
 
-			combinedText = StringJoiner.with('\n').join(text);
+			combinedText = String.join("\n", text);
 		}
 
 		if (o.has("text_height"))
@@ -91,22 +90,20 @@ public class TextLayer extends TutorialLayer
 	}
 
 	@Override
-	public void draw(GuiTutorial gui, double x, double y, double w, double h)
+	public void draw(PoseStack matrixStack, GuiTutorial gui, double x, double y, double w, double h)
 	{
 		Theme theme = gui.getTheme();
 		double fh = theme.getFontHeight();
-		double scale = h / fh * textHeight;
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x - (Bits.getFlag(flags, Theme.CENTERED) ? -w / 2D : 0D), y, 0D);
-		//GlStateManager.scale(scale, scale, 1D);
+		matrixStack.pushPose();
+		matrixStack.translate(x - (Bits.getFlag(flags, Theme.CENTERED) ? -w / 2D : 0D), y, 0D);
 
-		for (String s : theme.listFormattedStringToWidth(combinedText, (int) w))
+		for (FormattedText s : theme.listFormattedStringToWidth(new TextComponent(combinedText), (int) w))
 		{
-			theme.drawString(s, 0, 0, color, flags);
-			GlStateManager.translate(0D, fh + lineSpacing, 0D);
+			theme.drawString(matrixStack, s, 0, 0, color, flags);
+			matrixStack.translate(0D, fh + lineSpacing, 0D);
 		}
 
-		GlStateManager.popMatrix();
+		matrixStack.popPose();
 	}
 }

@@ -1,33 +1,32 @@
 package com.feed_the_beast.mods.ftbtutorialmod;
 
-import com.feed_the_beast.ftblib.lib.gui.GuiBase;
-import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
-import com.feed_the_beast.ftblib.lib.gui.Theme;
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
-import com.feed_the_beast.ftblib.lib.util.misc.MouseButton;
-import com.feed_the_beast.mods.ftbtutorialmod.data.ButtonLayer;
-import com.feed_the_beast.mods.ftbtutorialmod.data.HoverTextLayer;
-import com.feed_the_beast.mods.ftbtutorialmod.data.Tutorial;
-import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialLayer;
-import com.feed_the_beast.mods.ftbtutorialmod.data.TutorialPage;
+import com.feed_the_beast.mods.ftbtutorialmod.data.*;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.ui.BaseScreen;
+import dev.ftb.mods.ftblibrary.ui.GuiHelper;
+import dev.ftb.mods.ftblibrary.ui.Theme;
+import dev.ftb.mods.ftblibrary.ui.input.Key;
+import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
+import dev.ftb.mods.ftblibrary.util.TooltipList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 /**
  * @author LatvianModder
  */
-public class GuiTutorial extends GuiBase
+public class GuiTutorial extends BaseScreen
 {
 	public final Tutorial tutorial;
 	public int page = 0;
@@ -53,7 +52,7 @@ public class GuiTutorial extends GuiBase
 	{
 		if (page(false))
 		{
-			GuiHelper.playClickSound();
+			GuiHelper.playSound(SoundEvents.UI_BUTTON_CLICK, 1);
 		}
 	}
 
@@ -77,9 +76,8 @@ public class GuiTutorial extends GuiBase
 	}
 
 	@Override
-	public void drawBackground(Theme theme, int x, int y, int w, int h)
-	{
-		ResourceLocation background = Gui.OPTIONS_BACKGROUND;
+	public void drawBackground(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
+		ResourceLocation background = Gui.GUI_ICONS_LOCATION;//.OPTIONS_BACKGROUND;
 
 		if (tutorial.background != null)
 		{
@@ -91,18 +89,18 @@ public class GuiTutorial extends GuiBase
 			}
 		}
 
-		GlStateManager.disableLighting();
-		GlStateManager.disableFog();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		Minecraft.getMinecraft().getTextureManager().bindTexture(background);
-		GlStateManager.color(1F, 1F, 1F, 1F);
-		bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		bufferbuilder.pos(x, y + h, 0D).tex(0D, h / 32D).color(64, 64, 64, 255).endVertex();
-		bufferbuilder.pos(x + w, y + h, 0D).tex(w / 32D, h / 32D).color(64, 64, 64, 255).endVertex();
-		bufferbuilder.pos(x + w, y, 0D).tex(w / 32D, 0D).color(64, 64, 64, 255).endVertex();
-		bufferbuilder.pos(x, y, 0D).tex(0D, 0D).color(64, 64, 64, 255).endVertex();
-		tessellator.draw();
+		RenderSystem.disableLighting();
+		RenderSystem.disableFog();
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuilder();
+		Minecraft.getInstance().getTextureManager().bind(background);
+		RenderSystem.color4f(1F, 1F, 1F, 1F);
+		bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		bufferbuilder.vertex(x, y + h, 0D).uv(0F, h / 32F).color(64, 64, 64, 255).endVertex();
+		bufferbuilder.vertex(x + w, y + h, 0D).uv(w / 32F, h / 32F).color(64, 64, 64, 255).endVertex();
+		bufferbuilder.vertex(x + w, y, 0D).uv(w / 32F, 0F).color(64, 64, 64, 255).endVertex();
+		bufferbuilder.vertex(x, y, 0D).uv(0F, 0F).color(64, 64, 64, 255).endVertex();
+		tessellator.end();
 
 		if (tutorial.pages.isEmpty())
 		{
@@ -111,20 +109,20 @@ public class GuiTutorial extends GuiBase
 
 		if (getMouseX() < 30)
 		{
-			Color4I.WHITE.withAlpha(50).draw(x, y, 30, h);
+			Color4I.WHITE.withAlpha(50).draw(matrixStack, x, y, 30, h);
 		}
 		else if (getMouseX() > w - 30)
 		{
-			Color4I.WHITE.withAlpha(50).draw(x + w - 30, y, 30, h);
+			Color4I.WHITE.withAlpha(50).draw(matrixStack, x + w - 30, y, 30, h);
 		}
 	}
 
 	@Override
-	public void drawForeground(Theme theme, int x, int y, int w, int h)
+	public void drawForeground(PoseStack matrixStack, Theme theme, int x, int y, int w, int h)
 	{
 		if (tutorial.pages.isEmpty())
 		{
-			theme.drawString(TextFormatting.BOLD + I18n.format("ftbtutorialmod.gui.failed_to_load"), x + w / 2, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
+			theme.drawString(matrixStack, new TranslatableComponent("ftbtutorialmod.gui.failed_to_load").withStyle(ChatFormatting.BOLD), x + w / 2f, y + h / 2f, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
 			return;
 		}
 
@@ -161,11 +159,11 @@ public class GuiTutorial extends GuiBase
 			double th = layer.height / p.height * canvasH;
 			double tx = canvasX + (layer.posX == -1D ? ((p.width - layer.width) / 2D) : layer.posX) / p.width * canvasW;
 			double ty = canvasY + (layer.posY == -1D ? ((p.height - layer.height) / 2D) : layer.posY) / p.height * canvasH;
-			layer.draw(this, tx, ty, tw, th);
+			layer.draw(matrixStack, this, tx, ty, tw, th);
 
 			if (Theme.renderDebugBoxes)
 			{
-				GuiHelper.drawHollowRect((int) tx - 1, (int) ty - 1, (int) tw + 2, (int) th + 2, Color4I.GRAY.withAlpha(50), true);
+				GuiHelper.drawHollowRect(matrixStack,(int) tx - 1, (int) ty - 1, (int) tw + 2, (int) th + 2, Color4I.GRAY.withAlpha(50), true);
 			}
 		}
 
@@ -183,30 +181,29 @@ public class GuiTutorial extends GuiBase
 
 		if (Theme.renderDebugBoxes)
 		{
-			GuiHelper.drawHollowRect((int) maxBoxX - 1, (int) maxBoxY - 1, (int) maxBoxW + 2, (int) maxBoxH + 2, Color4I.GRAY.withAlpha(50), true);
+			GuiHelper.drawHollowRect(matrixStack,(int) maxBoxX - 1, (int) maxBoxY - 1, (int) maxBoxW + 2, (int) maxBoxH + 2, Color4I.GRAY.withAlpha(50), true);
 		}
 
-		GuiHelper.drawHollowRect((int) canvasX - 1, (int) canvasY - 1, (int) canvasW + 2, (int) canvasH + 2, col, false);
+		GuiHelper.drawHollowRect(matrixStack,(int) canvasX - 1, (int) canvasY - 1, (int) canvasW + 2, (int) canvasH + 2, col, false);
 
 		if (!tutorial.title.isEmpty())
 		{
-			theme.drawString(TextFormatting.BOLD + tutorial.title, x + w / 2, y + 10, Color4I.WHITE, Theme.CENTERED);
+			theme.drawString(matrixStack,ChatFormatting.BOLD + tutorial.title, x + w / 2, y + 10, Color4I.WHITE, Theme.CENTERED);
 		}
 
 		if (!p.description.isEmpty())
 		{
-			theme.drawString(p.description, x + w / 2, y + 23, Color4I.WHITE, Theme.CENTERED);
+			theme.drawString(matrixStack,p.description, x + w / 2, y + 23, Color4I.WHITE, Theme.CENTERED);
 		}
 
-		theme.drawString((page + 1) + " / " + tutorial.pages.size(), x + w / 2, y + h - 17, Color4I.WHITE, Theme.CENTERED);
+		theme.drawString(matrixStack,(page + 1) + " / " + tutorial.pages.size(), x + w / 2, y + h - 17, Color4I.WHITE, Theme.CENTERED);
 
-		theme.drawString(TextFormatting.BOLD + "<", x + 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
-		theme.drawString(TextFormatting.BOLD + (page == tutorial.pages.size() - 1 ? "X" : ">"), x + w - 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
+		theme.drawString(matrixStack,ChatFormatting.BOLD + "<", x + 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
+		theme.drawString(matrixStack,ChatFormatting.BOLD + (page == tutorial.pages.size() - 1 ? "X" : ">"), x + w - 15, y + h / 2, Color4I.WHITE, Theme.CENTERED | Theme.CENTERED_V);
 	}
 
 	@Override
-	public void addMouseOverText(List<String> list)
-	{
+	public void addMouseOverText(TooltipList list) {
 		super.addMouseOverText(list);
 
 		if (!tutorial.pages.isEmpty())
@@ -251,11 +248,11 @@ public class GuiTutorial extends GuiBase
 					{
 						if (layer instanceof HoverTextLayer)
 						{
-							list.addAll(((HoverTextLayer) layer).text);
+							((HoverTextLayer) layer).text.forEach(e -> list.add(new TextComponent(e)));
 						}
 						else
 						{
-							list.addAll(((ButtonLayer) layer).hover);
+							((ButtonLayer) layer).hover.forEach(e -> list.add(new TextComponent(e)));
 						}
 					}
 				}
@@ -264,11 +261,10 @@ public class GuiTutorial extends GuiBase
 	}
 
 	@Override
-	public boolean onClosedByKey(int key)
-	{
+	public boolean onClosedByKey(Key key) {
 		if (super.onClosedByKey(key))
 		{
-			openYesNo(I18n.format("ftbtutorialmod.gui.exit"), "", this::closeGui);
+			openYesNo(new TranslatableComponent("ftbtutorialmod.gui.exit"), TextComponent.EMPTY, this::closeGui);
 		}
 
 		return false;
@@ -286,20 +282,17 @@ public class GuiTutorial extends GuiBase
 	}
 
 	@Override
-	public boolean keyPressed(int key, char keyChar)
-	{
-		if (key == Keyboard.KEY_LEFT || key == Keyboard.KEY_BACK)
-		{
+	public boolean keyPressed(Key key) {
+		if (key.keyCode == GLFW.GLFW_KEY_LEFT || key.keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
 			page(false);
 			return true;
 		}
-		else if (key == Keyboard.KEY_RIGHT || key == Keyboard.KEY_NEXT)
-		{
+		else if (key.keyCode == GLFW.GLFW_KEY_RIGHT || key.keyCode == GLFW.GLFW_KEY_PAGE_UP) {
 			page(true);
 			return true;
 		}
 
-		return super.keyPressed(key, keyChar);
+		return super.keyPressed(key);
 	}
 
 	@Override
@@ -309,7 +302,7 @@ public class GuiTutorial extends GuiBase
 		{
 			if (page(false))
 			{
-				GuiHelper.playClickSound();
+				this.playClickSound();
 			}
 
 			return true;
@@ -318,7 +311,7 @@ public class GuiTutorial extends GuiBase
 		{
 			if (page(true))
 			{
-				GuiHelper.playClickSound();
+				this.playClickSound();
 			}
 
 			return true;
@@ -327,12 +320,12 @@ public class GuiTutorial extends GuiBase
 		{
 			if (page == tutorial.pages.size() - 1)
 			{
-				GuiHelper.playClickSound();
-				openYesNo("Exit tutorial?", "", this::closeGui);
+				this.playClickSound();
+				openYesNo(new TextComponent("Exit tutorial?"), TextComponent.EMPTY, this::closeGui);
 			}
 			else if (page(true))
 			{
-				GuiHelper.playClickSound();
+				this.playClickSound();
 			}
 
 			return true;
@@ -393,7 +386,7 @@ public class GuiTutorial extends GuiBase
 							handleClick(click);
 						}
 
-						GuiHelper.playClickSound();
+						this.playClickSound();
 					}
 				}
 			}
@@ -403,7 +396,7 @@ public class GuiTutorial extends GuiBase
 	}
 
 	@Override
-	public boolean mouseScrolled(int scroll)
+	public boolean mouseScrolled(double scroll)
 	{
 		return page(scroll < 0);
 	}

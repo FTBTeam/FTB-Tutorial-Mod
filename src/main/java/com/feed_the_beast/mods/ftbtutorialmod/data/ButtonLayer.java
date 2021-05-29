@@ -1,13 +1,13 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
-import com.feed_the_beast.ftblib.lib.util.JsonUtils;
+import com.feed_the_beast.mods.ftbtutorialmod.FTBTutorialModClient;
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.ui.GuiHelper;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class ButtonLayer extends TutorialLayer
 {
+	public final List<String> hover;
 	public Color4I color;
 	public String click;
-	public final List<String> hover;
 
 	public ButtonLayer(TutorialPage p)
 	{
@@ -48,14 +48,13 @@ public class ButtonLayer extends TutorialLayer
 		{
 			for (JsonElement e : o.get("hover").getAsJsonArray())
 			{
-				ITextComponent component = JsonUtils.deserializeTextComponent(e);
-				hover.add(component == null ? "" : component.getFormattedText());
+				hover.add(FTBTutorialModClient.parse(e.getAsString()).getString());
 			}
 		}
 	}
 
 	@Override
-	public void draw(GuiTutorial gui, double x, double y, double w, double h)
+	public void draw(PoseStack pose, GuiTutorial gui, double x, double y, double w, double h)
 	{
 		int bx = (int) x;
 		int by = (int) y;
@@ -63,11 +62,11 @@ public class ButtonLayer extends TutorialLayer
 		int bh = (int) h;
 
 		Color4I c = color.withAlpha((int) ((Math.sin(System.currentTimeMillis() * 0.003D) + 1D) / 2D * (color.alphai() - 100)) + 100);
-		GuiHelper.drawHollowRect(bx, by, bw, bh, c, false);
+		GuiHelper.drawHollowRect(pose, bx, by, bw, bh, c, false);
 
 		if (gui.isMouseOver(bx, by, bw, bh))
 		{
-			Color4I.WHITE.withAlpha(50).draw(bx + 1, by + 1, bw - 2, bh - 2);
+			Color4I.WHITE.withAlpha(50).draw(pose, bx + 1, by + 1, bw - 2, bh - 2);
 		}
 	}
 }

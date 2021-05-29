@@ -1,10 +1,11 @@
 package com.feed_the_beast.mods.ftbtutorialmod.data;
 
-import com.feed_the_beast.ftblib.lib.gui.GuiHelper;
-import com.feed_the_beast.ftblib.lib.icon.Color4I;
 import com.feed_the_beast.mods.ftbtutorialmod.GuiTutorial;
 import com.google.gson.JsonObject;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.ftb.mods.ftblibrary.icon.Color4I;
+import dev.ftb.mods.ftblibrary.ui.GuiHelper;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -45,7 +46,7 @@ public class BorderLayer extends TutorialLayer
 	}
 
 	@Override
-	public void draw(GuiTutorial gui, double x, double y, double w, double h)
+	public void draw(PoseStack pose, GuiTutorial gui, double x, double y, double w, double h)
 	{
 		int bx = (int) x;
 		int by = (int) y;
@@ -61,7 +62,7 @@ public class BorderLayer extends TutorialLayer
 
 		for (int i = 0; i < size; i++)
 		{
-			GuiHelper.drawHollowRect(bx - i, by - i, bw + i * 2, bh + i * 2, c, false);
+			GuiHelper.drawHollowRect(pose, bx - i, by - i, bw + i * 2, bh + i * 2, c, false);
 		}
 	}
 }
