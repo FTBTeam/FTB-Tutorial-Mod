@@ -18,7 +18,7 @@ import java.util.Collection;
 public class CommandOpenTutorial {
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		return Commands.literal("open_tutorial")
-				.then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("resource", StringArgumentType.string())).executes(CommandOpenTutorial::execute));
+				.then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("resource", StringArgumentType.word()).executes(CommandOpenTutorial::execute)));
 	}
 
 	private static int execute(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {

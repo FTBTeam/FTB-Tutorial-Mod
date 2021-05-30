@@ -77,7 +77,7 @@ public class GuiTutorial extends BaseScreen
 
 	@Override
 	public void drawBackground(PoseStack matrixStack, Theme theme, int x, int y, int w, int h) {
-		ResourceLocation background = Gui.GUI_ICONS_LOCATION;//.OPTIONS_BACKGROUND;
+		ResourceLocation background = Gui.BACKGROUND_LOCATION;// Gui.GUI_ICONS_LOCATION;//.OPTIONS_BACKGROUND;
 
 		if (tutorial.background != null)
 		{
